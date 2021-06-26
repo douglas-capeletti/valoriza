@@ -1,0 +1,24 @@
+### Variables
+
+@URI=http://0.0.0.0:7000
+@TIME={{$timestamp}}
+
+###
+
+# @name CreateUser
+POST {{URI}}/users
+content-type: application/json
+
+{
+  "name" : "Douglas {{TIME}}",
+  "email": "douglas.{{TIME}}@email.com",
+  "admin": true
+}
+
+###
+
+# @name GetUser
+@USER_ID={{CreateUser.response.body.id}}
+GET {{URI}}/users/{{USER_ID}}
+
+###

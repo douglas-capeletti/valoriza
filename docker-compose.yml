@@ -1,0 +1,30 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_DB: ${PG_BASE}
+    volumes:
+      - postgres_data_container:/data/db
+      - ./postgres-init-files:/docker-entrypoint-initdb.d
+
+  api:
+    build: .
+    container_name: valoriza-api
+    environment:
+      API_ENV: production
+      API_PORT: 8000
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    links: 
+      - postgres
+
+volumes:
+  postgres_data_container:
