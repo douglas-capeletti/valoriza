@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 export default class UserEntity {
 
     @PrimaryGeneratedColumn("uuid")
-    id: string;
+    readonly id: string;
 
     @Column()
     name: string;
@@ -13,12 +13,14 @@ export default class UserEntity {
     email: string;
 
     @Column()
-    admin: boolean;
+    password: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @Column()
+    admin?: boolean = false;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+    @CreateDateColumn({ name: 'created_at' })
+    readonly createdAt: Date;
 
+    @UpdateDateColumn({ name: 'updated_at' })
+    readonly updatedAt: Date;
 }

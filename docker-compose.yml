@@ -11,7 +11,6 @@ services:
       POSTGRES_DB: ${PG_BASE}
     volumes:
       - postgres_data_container:/data/db
-      - ./postgres-init-files:/docker-entrypoint-initdb.d
 
   api:
     build: .
@@ -19,6 +18,7 @@ services:
     environment:
       API_ENV: production
       API_PORT: 8000
+      API_SECRET: ${API_SECRET}
     ports:
       - 8000:8000
     depends_on:

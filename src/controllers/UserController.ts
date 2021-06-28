@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { IUserRequest } from '../model/dto/UserDTO';
-import UserService from '../service/UserService';
+import { IUserRequest } from '../models/interfaces/User';
+import UserService from '../services/UserService';
 
 
 export default class UserController {
