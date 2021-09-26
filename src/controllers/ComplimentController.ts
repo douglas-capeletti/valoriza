@@ -1,17 +1,27 @@
 import { Request, Response } from 'express'
 import { IComplimentRequest } from '../models/interfaces/Compliment';
 import ComplimentService from '../services/ComplimentService';
+import { badRequestIfAbsent } from '../utils/ValidationUtils';
 
 export default class UserController {
 
+    private service = new ComplimentService();
+
     async createCompliment(req: Request, res: Response) {
-        const complimentRequest: IComplimentRequest = { ...req.body }
+        const complimentRequest: IComplimentRequest = { ...req.body, senderId: req.token?.sub }
 
-        const service = new ComplimentService()
+        const compliment = await this.service.createCompliment(complimentRequest)
 
-        const user = await service.createCompliment(complimentRequest)
+        return res.json(compliment)
+    }
 
-        return res.json(user)
+    async listUserCompliments(req: Request, res: Response) {
+        
+        const receiverId = badRequestIfAbsent(req.token?.sub)
+
+        const compliments = await this.service.listUserCompliments(receiverId)
+
+        return res.json(compliments)
     }
 
 }

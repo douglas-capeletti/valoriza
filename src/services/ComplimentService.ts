@@ -1,28 +1,40 @@
-import { IComplimentRequest } from "../models/interfaces/Compliment";
+import { IComplimentRequest, IComplimentResponse, toComplimentResponse } from "../models/interfaces/Compliment";
 import ComplimentRepository from "../repositories/ComplimentRepository";
 import UserService from "./UserService";
 
 export default class ComplimentService {
 
-    async createCompliment(request: IComplimentRequest) {
+    private repo = ComplimentRepository.getInstance()
+
+    async createCompliment(request: IComplimentRequest): Promise<IComplimentResponse> {
         const { receiverId, senderId } = request
         if (receiverId === senderId) {
             throw new Error(`Receiver should be different from sender`)
         }
 
-        const userService = new UserService()
-        const receiverExists = await userService.userExists({ id: receiverId })
+        const receiverExists = await new UserService().userExists({ id: receiverId })
 
         if (!receiverExists) {
             throw new Error(`Receiver don't exists`)
         }
 
-        const repo = ComplimentRepository.getInstance()
+        const compliment = this.repo.create(request)
 
-        const complient = repo.create(request)
+        await this.repo.save(compliment)
 
-        await repo.save(complient)
+        return toComplimentResponse(compliment)
+    }
 
-        return complient
+    async listUserCompliments(params: {receiverId?: string}): Promise<Array<IComplimentResponse>> {
+
+        const receiverExists = await new UserService().userExists({ id: receiverId })
+
+        if (!receiverExists) {
+            throw new Error(`Receiver don't exists`)
+        }
+
+        const compliments = await this.repo.find({ receiverId })
+
+        return compliments.map(compliment => toComplimentResponse(compliment))
     }
 }

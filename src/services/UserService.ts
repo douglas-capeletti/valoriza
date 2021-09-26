@@ -1,12 +1,12 @@
 import { FindConditions, FindOneOptions } from 'typeorm'
 import { hash } from "bcryptjs";
-import { IUserRequest } from "../models/interfaces/User";
+import { IUserRequest, IUserResponse, toUserResponse } from "../models/interfaces/User";
 import UserEntity from "../models/entities/UserEntity";
 import UserRepository from "../repositories/UserRepository";
 
 export default class UserService {
 
-    async createUser(request: IUserRequest) {
+    async createUser(request: IUserRequest): Promise<IUserResponse> {
         const repo = UserRepository.getInstance()
 
         const userAlreadyExists = await this.userExists({ email: request.email })
@@ -20,7 +20,7 @@ export default class UserService {
 
         await repo.save(user)
 
-        return user
+        return toUserResponse(user)
     }
 
     async userExists(conditions?: FindConditions<UserEntity>, options?: FindOneOptions<UserEntity>) {

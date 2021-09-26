@@ -1,5 +1,6 @@
 import { sign, verify } from "jsonwebtoken";
 import UserEntity from "../models/entities/UserEntity";
+import { IBasic } from "../models/interfaces/Basic";
 import { IToken } from "../models/interfaces/Token";
 
 const SECRET = process.env.TOKEN_SECRET ?? 'secret'
@@ -15,7 +16,7 @@ export function getTokenHash(expectedType: string, authorization?: string): stri
     return undefined;
 }
 
-export function decodeBasic(basic: string) {
+export function decodeBasic(basic: string): IBasic | undefined {
     const [email, password] = Buffer.from(basic, 'base64').toString('utf-8').split(':')
     return email && password ? { email, password } : undefined
 }
@@ -23,16 +24,12 @@ export function decodeBasic(basic: string) {
 export function generateToken({ id, email, admin }: UserEntity): string {
     const payload = { email, admin }
     const options = { subject: id, expiresIn: EXPIRE_IN }
-    console.log('secret =>', SECRET)
-    console.log('expires_in =>', EXPIRE_IN)
     return sign(payload, SECRET, options)
 }
 
-export function verifyToken(hash: string) {
+export function verifyToken(hash: string): IToken | undefined {
     try {
-        const content = verify(hash, SECRET)
-        console.log('CONTENT =>', content)
-        return content as IToken
+        return verify(hash, SECRET) as IToken
     } catch (err) {
         return undefined
     }

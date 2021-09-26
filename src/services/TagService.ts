@@ -1,9 +1,9 @@
-import { ITagRequest } from "../models/interfaces/Tag";
+import { ITagRequest, ITagResponse, toTagResponse } from "../models/interfaces/Tag";
 import TagRepository from "../repositories/TagRepository";
 
 export default class TagService {
 
-    async createTag({ name }: ITagRequest) {
+    async createTag({ name }: ITagRequest): Promise<ITagResponse> {
         const repo = TagRepository.getInstance()
         
         const tagAlreadyExists = await repo.findOne({ name })
@@ -12,10 +12,10 @@ export default class TagService {
             throw new Error(`Tag '${name}' already exists`)
         }
 
-        const user = repo.create({ name })
+        const tag = repo.create({ name })
 
-        await repo.save(user)
+        await repo.save(tag)
 
-        return user
+        return toTagResponse(tag)
     }
 }

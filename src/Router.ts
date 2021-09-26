@@ -3,7 +3,7 @@ import AuthController from "./controllers/AuthController";
 import ComplimentController from "./controllers/ComplimentController";
 import TagController from "./controllers/TagController";
 import UserController from "./controllers/UserController"
-import { validateToken } from "./middlewares/token/TokenHandler"
+import { ITokenRole, validateToken } from "./middlewares/token/TokenHandler"
 
 const router = Router()
 
@@ -17,9 +17,11 @@ router.post('/auth', authController.authenticate)
 router.post('/users', userController.createUser)
 
 //Admin token needed
-router.post('/tags', validateToken(true), tagController.createTag)
+router.post('/tags', validateToken(ITokenRole.ADMIN), tagController.createTag)
 
 //Any token needed
 router.post('/compliments', validateToken(), complimentController.createCompliment)
+router.get('/compliments/sent', validateToken(), complimentController.listUserCompliments)
+router.get('/compliments/received', validateToken(), complimentController.listUserCompliments)
 
 export default router;
